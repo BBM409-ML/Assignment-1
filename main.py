@@ -1,4 +1,5 @@
 from math import sqrt
+
 import pandas
 
 
@@ -8,8 +9,8 @@ def read_csv_file(filename):
 
 def calculate_euclidean_distance(row1, row2):
 	distance = 0.0
-	for i in range(len(row1)-1):
-		distance += (row1[i] - row2[i])**2
+	for i in range(len(row1) - 1):
+		distance += (row1[i] - row2[i]) ** 2
 	return sqrt(distance)
 
 
@@ -44,11 +45,27 @@ def normalize_dataset(dataset):
 	return normalized_dataset
 
 
+def cross_validation_splitter(data, n_folds):
+	dataframe_split = list()
+	shuffle_data = data.sample(frac=1)
+	for i in range(n_folds):
+		dataframe_split.insert(i, fold_i_of_k(shuffle_data, i+1, n_folds))
+
+	return dataframe_split
+
+
+def fold_i_of_k(dataset, i, k):
+	n = len(dataset)
+	print(n)
+	return dataset[n * (i - 1) // k:n * i // k]
+
+
 def main():
 	data = read_csv_file("glass.csv.xls")
 	data_without_type = data.drop(columns=data.columns[-1], axis=1)
-	print(normalize_dataset(data))
+	# print(normalize_dataset(data))
 	train_set, test_set = train_test_splitter(data)
+	cross_validation_splitter(data, 5)
 	neigh = get_nearest_neighbors(train_set, test_set.iloc[0], 5)
 
 
